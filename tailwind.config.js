@@ -3,5 +3,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require('@tailwindcss/line-clamp'), require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/line-clamp')],
 }

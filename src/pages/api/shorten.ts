@@ -17,12 +17,13 @@ export default async function handler(req: NextRequest) {
     const body = await req.json()
     z.string().url().parse(body.url)
     const id = nanoid(5)
-
+    console.time('setURL')
     await redis.set(id, body.url)
+    console.timeEnd('setURL')
 
     return new Response(
       JSON.stringify({
-        id,
+        url: `https://www.shorto.ink/${id}`,
       }),
       {
         status: 200,
