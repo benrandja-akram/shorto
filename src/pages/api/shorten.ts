@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { Redis } from '@upstash/redis'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
