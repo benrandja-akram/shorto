@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 import { useMutation } from '@tanstack/react-query'
 import classnames from 'classnames'
 import { useForm } from 'react-hook-form'
 import { string } from 'zod'
 import toast, { Toaster } from 'react-hot-toast'
+import autoAnimate from '@formkit/auto-animate'
 
 import { loader } from '../icons'
 import Head from 'next/head'
@@ -15,13 +16,14 @@ type ILink = {
 }
 
 const Home: NextPage = () => {
+  const [viewMore, enableViewMore] = useReducer(() => true, false)
   const [links, setLinks] = useState([] as ILink[])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    reset: resetForm,
   } = useForm()
 
   const { isLoading, mutate, reset, data } = useMutation(
@@ -42,7 +44,7 @@ const Home: NextPage = () => {
     },
     {
       onSuccess(shortened, url) {
-        setValue('url', '')
+        resetForm()
         const link: ILink = { link: url, shortened: shortened.url }
         localStorage.setItem('links', JSON.stringify([...links, link]))
         setLinks([link, ...links])
@@ -55,16 +57,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     setLinks(JSON.parse(localStorage.getItem('links') ?? '[]') as ILink[])
   }, [])
-
-  const copy = () => {
-    if (data) {
-      navigator.clipboard.writeText(data.url)
-    }
-
-    toast('URL copied to your clipboard!', {
-      icon: '👏',
-    })
-  }
 
   return (
     <>
@@ -80,16 +72,16 @@ const Home: NextPage = () => {
           </h1>
           <div className="my-6 md:my-12">
             <form
+              ref={(node) => node && autoAnimate(node)}
               onSubmit={handleSubmit((values) => {
-                if (data) {
-                  copy()
-                } else {
-                  mutate(values.url)
-                }
+                mutate(values.url)
               })}
             >
               <div className="relative flex flex-col space-y-5 md:flex-row md:space-y-0 md:space-x-6">
-                <div className="flex-1">
+                <div
+                  className="flex-1"
+                  ref={(node) => node && autoAnimate(node)}
+                >
                   <input
                     type="text"
                     className={classnames(
@@ -97,8 +89,6 @@ const Home: NextPage = () => {
                       {
                         'focus:ring-2 focus:ring-indigo-500': !errors.url,
                         'ring-2 ring-red-400': errors.url,
-                        'text-gray-800': !data,
-                        'border-indigo-50 bg-indigo-50 text-indigo-800': data,
                       }
                     )}
                     {...register('url', {
@@ -136,32 +126,49 @@ const Home: NextPage = () => {
               <div className="mt-8 h-px border-t"></div>
               <div className="my-8 space-y-3">
                 <h2 className="text-xl font-semibold">Previous URLs</h2>
-                <div className=" divide-y rounded-lg border text-lg text-gray-700">
-                  {links.map(({ link, shortened }, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between space-x-8  py-4 px-6"
-                    >
-                      <a
-                        target="_blank"
-                        rel="popover noreferrer"
-                        href={link}
-                        className="flex-1 basis-0 text-slate-600 line-clamp-1 hover:underline "
+                <div
+                  className=" divide-y rounded-lg border text-lg text-gray-700"
+                  ref={(node) => {
+                    node && autoAnimate(node)
+                  }}
+                >
+                  {links
+                    .slice(0, viewMore ? undefined : 4)
+                    .map(({ link, shortened }) => (
+                      <div
+                        key={shortened}
+                        className="flex items-center justify-between space-x-8  py-4 px-6"
                       >
-                        {link}
-                      </a>
-                      <a
-                        target="_blank"
-                        rel="popover noreferrer"
-                        href={shortened}
-                        className="font-medium text-indigo-600 hover:underline"
-                      >
-                        {shortened}
-                      </a>
-                      <Copy text={shortened} />
-                    </div>
-                  ))}
+                        <a
+                          target="_blank"
+                          rel="popover noreferrer"
+                          href={link}
+                          className="flex-1 basis-0 text-slate-600 line-clamp-1 hover:underline "
+                        >
+                          {link}
+                        </a>
+                        <a
+                          target="_blank"
+                          rel="popover noreferrer"
+                          href={shortened}
+                          className="font-medium text-indigo-600 hover:underline"
+                        >
+                          {shortened}
+                        </a>
+                        <Copy text={shortened} />
+                      </div>
+                    ))}
                 </div>
+                {links.length > 4 && !viewMore && (
+                  <div className=" ">
+                    <button
+                      className="py-2 font-semibold text-indigo-600 hover:underline"
+                      onClick={enableViewMore}
+                    >
+                      View more
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -180,7 +187,9 @@ function Copy({ text }: { text: string }) {
       onClick={() => {
         setCopied(true)
         navigator.clipboard.writeText(text)
-
+        toast('URL copied to your clipboard!', {
+          icon: '👏',
+        })
         clearTimeout(timeoutId.current)
         timeoutId.current = setTimeout(() => {
           setCopied(false)
