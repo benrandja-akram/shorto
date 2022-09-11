@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useMutation } from '@tanstack/react-query'
@@ -25,8 +25,11 @@ const Home: NextPage = () => {
     formState: { errors },
     reset: resetForm,
   } = useForm()
-
-  const { isLoading, mutate, reset, data } = useMutation(
+  const animateRef = useCallback(
+    (node: HTMLElement | null) => node && autoAnimate(node),
+    []
+  )
+  const { isLoading, mutate, data } = useMutation(
     (url: string) => {
       return fetch('/api/shorten', {
         method: 'POST',
@@ -46,7 +49,7 @@ const Home: NextPage = () => {
       onSuccess(shortened, url) {
         resetForm()
         const link: ILink = { link: url, shortened: shortened.url }
-        localStorage.setItem('links', JSON.stringify([...links, link]))
+        localStorage.setItem('links', JSON.stringify([link, ...links]))
         setLinks([link, ...links])
 
         toast.success('URL created successfully')
@@ -63,34 +66,42 @@ const Home: NextPage = () => {
       <Head>
         <title>URL Shortener</title>
       </Head>
-      <div className="py-4 md:py-12">
+      <div className="py-4 md:py-8">
         <Toaster position="top-center" reverseOrder={false} />
 
-        <main className="mx-auto max-w-4xl px-4">
-          <div className="flex items-center justify-between">
-            <h1 className="logo flex items-center space-x-3 text-3xl font-extrabold md:text-4xl lg:text-5xl">
+        <div className="mx-auto max-w-5xl px-4">
+          <header className="flex items-center justify-between">
+            <div className="logo flex items-center space-x-3 text-3xl font-semibold md:text-4xl lg:text-5xl">
               <Logo /> <span className="text-indigo-800">Shorto</span>
-            </h1>
+            </div>
             <a href="https://github.com/benrandja-akram/shorto">
               <GithubLogo />
             </a>
-          </div>
-          <div className="my-6 md:my-12">
+          </header>
+          <main className="my-6 md:my-12">
+            <div className="mb-8">
+              <h1 className="text-3xl font-extrabold tracking-tighter md:text-center md:text-5xl">
+                Free & Fast URL Shortener
+              </h1>
+              <p className="mx-auto mt-4 hidden max-w-2xl text-center text-lg text-gray-500 md:block">
+                Shortened URLs will never expire. We do not display ads during
+                direct redirecting to the original url.
+              </p>
+            </div>
             <form
-              ref={(node) => node && autoAnimate(node)}
-              onSubmit={handleSubmit((values) => {
-                mutate(values.url)
-              })}
+              ref={animateRef}
+              onSubmit={handleSubmit((values) => mutate(values.url))}
             >
               <div className="relative flex flex-col space-y-5 md:flex-row md:space-y-0 md:space-x-6">
-                <div
-                  className="flex-1"
-                  ref={(node) => node && autoAnimate(node)}
-                >
+                <div className="relative flex-1" ref={animateRef}>
+                  <span className="pointer-events-none absolute left-3.5 top-4 z-10">
+                    <LinkIcon />
+                  </span>
                   <input
                     type="text"
+                    placeholder="Shorten your link"
                     className={classnames(
-                      'block h-14 w-full rounded-lg border-2 px-5 text-lg text-gray-800 outline-none ring-offset-2  transition-shadow md:flex-1 md:text-xl',
+                      'block h-14 w-full rounded-lg border-2 px-5 pl-12 text-lg text-gray-800 outline-none ring-offset-2  transition-shadow md:flex-1 md:text-xl',
                       {
                         'focus:ring-2 focus:ring-indigo-500': !errors.url,
                         'ring-2 ring-red-400': errors.url,
@@ -99,9 +110,6 @@ const Home: NextPage = () => {
                     {...register('url', {
                       required: true,
                       validate: (v) => zString().url().safeParse(v).success,
-                      onChange(ev) {
-                        reset()
-                      },
                     })}
                   />
                   {errors.url && (
@@ -125,40 +133,48 @@ const Home: NextPage = () => {
                 </div>
               )}
             </form>
-          </div>
+          </main>
+
           {!!links.length && (
-            <div className="my-8 space-y-3">
+            <div className="my-8 space-y-2">
               <h2 className="text-xl font-semibold">Previous shortened URLs</h2>
               <div
-                className=" divide-y rounded-lg border text-lg text-gray-700"
+                className=" divide-y overflow-hidden rounded-lg border text-gray-700 md:rounded-xl md:text-lg"
                 ref={(node) => {
                   node && autoAnimate(node)
                 }}
               >
                 {links
                   .slice(0, viewMore ? undefined : 4)
-                  .map(({ link, shortened }) => (
+                  .map(({ link, shortened }, index) => (
                     <div
                       key={shortened}
-                      className="flex items-center justify-between space-x-8  py-4 px-6"
+                      className={classnames(
+                        'grid grid-cols-1 gap-2 py-3 px-4 transition-colors md:grid-cols-[1fr_auto_1fr_auto] md:flex-row md:items-center md:gap-6 md:py-4 md:px-6',
+                        shortened === data?.url && 'bg-blue-50'
+                      )}
                     >
                       <a
                         target="_blank"
                         rel="popover noreferrer"
                         href={link}
-                        className="flex-1 basis-0 text-slate-600 line-clamp-1 hover:underline "
+                        className="text-slate-500 line-clamp-1 hover:underline "
                       >
                         {link}
                       </a>
+                      <Logo className="hidden h-6 w-6 md:block" />
                       <a
                         target="_blank"
                         rel="popover noreferrer"
                         href={shortened}
-                        className="font-medium text-indigo-600 hover:underline"
+                        className="flex items-center space-x-3 font-medium text-indigo-600 hover:underline md:justify-end"
                       >
-                        {shortened}
+                        <Logo className="h-5 w-5 md:hidden" />
+                        <span>{shortened}</span>
                       </a>
-                      <Copy text={shortened} />
+                      <div>
+                        <Copy text={shortened} />
+                      </div>
                     </div>
                   ))}
               </div>
@@ -174,7 +190,7 @@ const Home: NextPage = () => {
               )}
             </div>
           )}
-        </main>
+        </div>
       </div>
     </>
   )
@@ -186,6 +202,9 @@ function Copy({ text }: { text: string }) {
 
   return (
     <button
+      ref={(node) =>
+        node && autoAnimate(node, { duration: 150, easing: 'ease-out' })
+      }
       onClick={() => {
         setCopied(true)
         navigator.clipboard.writeText(text)
@@ -197,18 +216,29 @@ function Copy({ text }: { text: string }) {
           setCopied(false)
         }, 1500)
       }}
-      className="w-28 rounded-lg bg-indigo-100 py-2 font-medium text-slate-700"
+      className={classnames(
+        'min-w-[96px] rounded-lg py-1.5 font-medium  transition-colors md:py-2',
+        {
+          'bg-indigo-500 text-white': copied,
+          'bg-indigo-200/60 text-slate-700 hover:bg-indigo-200': !copied,
+        }
+      )}
     >
-      {copied ? 'Copied!' : 'Copy'}
+      {copied ? (
+        <span key="copied">Copied!</span>
+      ) : (
+        <span key="copy">Copy</span>
+      )}
     </button>
   )
 }
-function Logo() {
+function Logo(props: React.ComponentProps<'svg'>) {
   return (
     <svg
       viewBox="0 0 64.000000 64.000000"
       preserveAspectRatio="xMidYMid meet"
       className="h-9 w-9 md:h-14 md:w-14"
+      {...props}
     >
       <g
         transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
@@ -251,4 +281,16 @@ function GithubLogo() {
   )
 }
 
+function LinkIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      data-testid="LinkIcon"
+      className="h-6 w-6 fill-gray-400"
+    >
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg>
+  )
+}
 export default Home

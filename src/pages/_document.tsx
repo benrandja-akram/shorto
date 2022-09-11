@@ -11,7 +11,7 @@ export default function Document() {
           crossOrigin="crossorigin"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Londrina+Outline&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Londrina+Outline&display=swap"
           rel="stylesheet"
         />
         <link rel="icon" type="image/svg" href="/logo.png" />
