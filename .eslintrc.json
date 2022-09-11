@@ -1,6 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "prettier"],
   "rules": {
-    "@next/next/no-server-import-in-page": "off"
+    "@next/next/no-server-import-in-page": "off",
+    "@next/next/no-title-in-document-head": "off"
   }
 }
