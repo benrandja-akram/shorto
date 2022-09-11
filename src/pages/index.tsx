@@ -1,14 +1,14 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
-import type { GetServerSideProps, NextPage } from 'next'
+import type { NextPage } from 'next'
+import Head from 'next/head'
 import { useMutation } from '@tanstack/react-query'
 import classnames from 'classnames'
 import { useForm } from 'react-hook-form'
-import { string } from 'zod'
+import { string as zString } from 'zod'
 import toast, { Toaster } from 'react-hot-toast'
 import autoAnimate from '@formkit/auto-animate'
 
 import { loader } from '../icons'
-import Head from 'next/head'
 
 type ILink = {
   link: string
@@ -63,13 +63,18 @@ const Home: NextPage = () => {
       <Head>
         <title>URL Shortener</title>
       </Head>
-      <div className="py-12">
+      <div className="py-4 md:py-12">
         <Toaster position="top-center" reverseOrder={false} />
 
         <main className="mx-auto max-w-4xl px-4">
-          <h1 className="logo flex items-center space-x-3 text-3xl font-extrabold md:text-4xl lg:text-5xl">
-            <Logo /> <span className="text-indigo-800">Shorto</span>
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="logo flex items-center space-x-3 text-3xl font-extrabold md:text-4xl lg:text-5xl">
+              <Logo /> <span className="text-indigo-800">Shorto</span>
+            </h1>
+            <a href="https://github.com/benrandja-akram/shorto">
+              <GithubLogo />
+            </a>
+          </div>
           <div className="my-6 md:my-12">
             <form
               ref={(node) => node && autoAnimate(node)}
@@ -93,7 +98,7 @@ const Home: NextPage = () => {
                     )}
                     {...register('url', {
                       required: true,
-                      validate: (v) => string().url().safeParse(v).success,
+                      validate: (v) => zString().url().safeParse(v).success,
                       onChange(ev) {
                         reset()
                       },
@@ -122,55 +127,52 @@ const Home: NextPage = () => {
             </form>
           </div>
           {!!links.length && (
-            <>
-              <div className="mt-8 h-px border-t"></div>
-              <div className="my-8 space-y-3">
-                <h2 className="text-xl font-semibold">Previous URLs</h2>
-                <div
-                  className=" divide-y rounded-lg border text-lg text-gray-700"
-                  ref={(node) => {
-                    node && autoAnimate(node)
-                  }}
-                >
-                  {links
-                    .slice(0, viewMore ? undefined : 4)
-                    .map(({ link, shortened }) => (
-                      <div
-                        key={shortened}
-                        className="flex items-center justify-between space-x-8  py-4 px-6"
-                      >
-                        <a
-                          target="_blank"
-                          rel="popover noreferrer"
-                          href={link}
-                          className="flex-1 basis-0 text-slate-600 line-clamp-1 hover:underline "
-                        >
-                          {link}
-                        </a>
-                        <a
-                          target="_blank"
-                          rel="popover noreferrer"
-                          href={shortened}
-                          className="font-medium text-indigo-600 hover:underline"
-                        >
-                          {shortened}
-                        </a>
-                        <Copy text={shortened} />
-                      </div>
-                    ))}
-                </div>
-                {links.length > 4 && !viewMore && (
-                  <div className=" ">
-                    <button
-                      className="py-2 font-semibold text-indigo-600 hover:underline"
-                      onClick={enableViewMore}
+            <div className="my-8 space-y-3">
+              <h2 className="text-xl font-semibold">Previous shortened URLs</h2>
+              <div
+                className=" divide-y rounded-lg border text-lg text-gray-700"
+                ref={(node) => {
+                  node && autoAnimate(node)
+                }}
+              >
+                {links
+                  .slice(0, viewMore ? undefined : 4)
+                  .map(({ link, shortened }) => (
+                    <div
+                      key={shortened}
+                      className="flex items-center justify-between space-x-8  py-4 px-6"
                     >
-                      View more
-                    </button>
-                  </div>
-                )}
+                      <a
+                        target="_blank"
+                        rel="popover noreferrer"
+                        href={link}
+                        className="flex-1 basis-0 text-slate-600 line-clamp-1 hover:underline "
+                      >
+                        {link}
+                      </a>
+                      <a
+                        target="_blank"
+                        rel="popover noreferrer"
+                        href={shortened}
+                        className="font-medium text-indigo-600 hover:underline"
+                      >
+                        {shortened}
+                      </a>
+                      <Copy text={shortened} />
+                    </div>
+                  ))}
               </div>
-            </>
+              {links.length > 4 && !viewMore && (
+                <div className=" ">
+                  <button
+                    className="py-2 font-semibold text-indigo-600 hover:underline"
+                    onClick={enableViewMore}
+                  >
+                    View more
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </main>
       </div>
@@ -204,12 +206,9 @@ function Copy({ text }: { text: string }) {
 function Logo() {
   return (
     <svg
-      version="1.0"
-      xmlns="http://www.w3.org/2000/svg"
-      width="56px"
-      height="56px"
       viewBox="0 0 64.000000 64.000000"
       preserveAspectRatio="xMidYMid meet"
+      className="h-9 w-9 md:h-14 md:w-14"
     >
       <g
         transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
@@ -237,13 +236,19 @@ function Logo() {
     </svg>
   )
 }
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return {
-    props: {},
-  }
-}
-export const config = {
-  runtime: 'experimental-edge',
+
+function GithubLogo() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="h-8 w-8 fill-indigo-800 transition-colors hover:fill-indigo-700"
+    >
+      <path
+        fillRule="evenodd"
+        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+      ></path>
+    </svg>
+  )
 }
 
 export default Home
