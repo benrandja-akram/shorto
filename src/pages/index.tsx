@@ -74,7 +74,10 @@ const Home: NextPage = () => {
             <div className="logo flex items-center space-x-3 text-3xl font-semibold md:text-4xl lg:text-5xl">
               <Logo /> <span className="text-indigo-800">Shorto</span>
             </div>
-            <a href="https://github.com/benrandja-akram/shorto">
+            <a
+              aria-label="shorto github repository"
+              href="https://github.com/benrandja-akram/shorto"
+            >
               <GithubLogo />
             </a>
           </header>
