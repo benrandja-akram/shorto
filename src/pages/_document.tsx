@@ -2,19 +2,52 @@ import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
   return (
-    <Html>
+    <Html lang="en">
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="icon" type="image/svg" href="/logo.png" />
+
         <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
+          rel="preload"
+          href="/fonts/londrina-outline-v23-latin-regular.woff2"
+          as="font"
+          type="font/woff2"
           crossOrigin="crossorigin"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Londrina+Outline&display=swap"
-          rel="stylesheet"
+          rel="preload"
+          href="/fonts/inter-v12-latin-regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="crossorigin"
         />
-        <link rel="icon" type="image/svg" href="/logo.png" />
+        <link
+          rel="preload"
+          href=" /fonts/inter-v12-latin-500.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="crossorigin"
+        />
+        <link
+          rel="preload"
+          href=" /fonts/inter-v12-latin-600.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="crossorigin"
+        />
+        <link
+          rel="preload"
+          href=" /fonts/inter-v12-latin-700.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="crossorigin"
+        />
+        <link
+          rel="preload"
+          href=" /fonts/inter-v12-latin-800.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="crossorigin"
+        />
       </Head>
       <body>
         <Main />
