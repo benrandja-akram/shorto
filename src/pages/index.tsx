@@ -71,7 +71,7 @@ const Home: NextPage = () => {
 
         <div className="mx-auto max-w-5xl px-4">
           <header className="flex items-center justify-between">
-            <div className="logo flex items-center space-x-3 text-3xl font-semibold md:text-4xl lg:text-5xl">
+            <div className="flex items-center space-x-3 font-londrina text-3xl font-semibold md:text-4xl lg:text-5xl">
               <Logo /> <span className="text-indigo-800">Shorto</span>
             </div>
             <a
