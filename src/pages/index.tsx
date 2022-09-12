@@ -65,6 +65,11 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>URL Shortener</title>
+
+        <meta
+          name="description"
+          content="Free & Fast URL Shortener, Shortened URLs will never expire. We do not display ads during direct redirecting to the original url."
+        />
       </Head>
       <div className="py-4 md:py-8">
         <Toaster position="top-center" reverseOrder={false} />
