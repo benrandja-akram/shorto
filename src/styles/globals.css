@@ -69,3 +69,15 @@ body {
     opacity: 1;
   }
 }
+
+@keyframes contentShow {
+  from {
+    @apply opacity-0;
+  }
+  to {
+    @apply opacity-100;
+  }
+}
+.dialog {
+  animation: contentShow 250ms ease-in;
+}

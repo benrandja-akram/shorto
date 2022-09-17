@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import autoAnimate from '@formkit/auto-animate'
 
 import { loader } from '../icons'
+import { ShareDialog } from '../share-dialog'
 
 type ILink = {
   link: string
@@ -18,7 +19,7 @@ type ILink = {
 const Home: NextPage = () => {
   const [viewMore, enableViewMore] = useReducer(() => true, false)
   const [links, setLinks] = useState([] as ILink[])
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {
     register,
     handleSubmit,
@@ -47,12 +48,13 @@ const Home: NextPage = () => {
     },
     {
       onSuccess(shortened, url) {
+        setIsDialogOpen(true)
         resetForm()
         const link: ILink = { link: url, shortened: shortened.url }
         localStorage.setItem('links', JSON.stringify([link, ...links]))
         setLinks([link, ...links])
 
-        toast.success('URL created successfully')
+        toast.success('URL shortened successfully')
       },
     }
   )
@@ -73,6 +75,11 @@ const Home: NextPage = () => {
       </Head>
       <div className="py-4 md:py-8">
         <Toaster position="top-center" reverseOrder={false} />
+        <ShareDialog
+          link={data?.url ?? ''}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+        />
 
         <div className="mx-auto max-w-5xl px-4">
           <header className="flex items-center justify-between">
