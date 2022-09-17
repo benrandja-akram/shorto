@@ -1,23 +1,17 @@
-import React, { useRef, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import autoAnimate from '@formkit/auto-animate'
 
 import { RiCloseFill } from 'react-icons/ri'
 import classNames from 'classnames'
+import { useCopy } from './use-copy'
 
 type Props = { link: string } & React.ComponentProps<typeof Dialog.Root>
 
 function ShareDialog({ link, ...props }: Props) {
-  const [copied, setCopied] = useState(false)
+  const [copied, copyToClipboard] = useCopy()
 
-  const timerRef = useRef<NodeJS.Timeout>()
   const onCopy = () => {
-    window.navigator.clipboard.writeText(link)
-    setCopied(true)
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setCopied(false)
-    }, 2000)
+    copyToClipboard(link)
   }
 
   return (
