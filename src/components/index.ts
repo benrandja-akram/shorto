@@ -1,3 +1,5 @@
+'use client'
+
 export * from './use-copy'
 export * from './share-dialog'
 export * from './logo'
