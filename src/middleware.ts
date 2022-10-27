@@ -26,6 +26,10 @@ export async function middleware(request: NextRequest) {
   console.timeEnd('getUrl')
 
   if (url) return NextResponse.redirect(url)
+
+  const notfoundUrl = request.nextUrl.clone()
+  notfoundUrl.pathname = '/not-found'
+  return NextResponse.rewrite(notfoundUrl)
 }
 
 export const config = {
