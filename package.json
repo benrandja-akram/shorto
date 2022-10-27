@@ -8,24 +8,31 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "sideEffects": [
+    "*.scss",
+    "*.css"
+  ],
   "dependencies": {
     "@formkit/auto-animate": "^1.0.0-beta.3",
-    "@next/font": "^13.0.0",
+    "@next/font": "^13.0.7-canary.1",
     "@radix-ui/react-dialog": "^1.0.0",
     "@tanstack/react-query": "^4.2.3",
+    "@types/js-cookie": "^3.0.2",
     "@upstash/redis": "^1.13.1",
     "classnames": "^2.3.1",
+    "framer-motion": "^7.6.6",
+    "js-cookie": "^3.0.1",
     "nanoid": "^4.0.0",
-    "next": "^13.0.0",
+    "next": "^13.0.7-canary.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.34.2",
     "react-hot-toast": "^2.3.0",
     "react-icons": "^4.4.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
+    "@types/is-url": "^1.2.30",
     "@types/node": "^18.7.14",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",

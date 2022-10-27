@@ -1,19 +1,34 @@
 import { AiFillGithub } from 'react-icons/ai'
-import { Logo } from '../components'
 import classNames from 'classnames'
+import { Londrina_Outline, Inter } from '@next/font/google'
+import Link from 'next/link'
 
+import logo from '../../public/logo.png'
 import '../styles/globals.css'
 
-import { Londrina_Outline, Inter } from '@next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
-const londrina = Londrina_Outline({ weight: '400', subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--inter',
+})
+const londrina = Londrina_Outline({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--londrina',
+})
 
 function Layout({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en" className={inter.className}>
+    <html
+      lang="en"
+      className={classNames('font-inter', inter.variable, londrina.variable)}
+    >
       <head>
-        <link rel="icon" type="image/svg" href="/logo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg" href={logo.src} />
         <title>URL Shortener</title>
         <meta
           name="description"
@@ -24,14 +39,19 @@ function Layout({ children }: React.PropsWithChildren) {
         <div className="py-4 md:py-8">
           <div className="mx-auto max-w-5xl px-4">
             <header className="flex items-center justify-between">
-              <div
-                className={classNames(
-                  'flex items-center space-x-3 text-3xl !font-semibold md:text-4xl lg:text-5xl',
-                  londrina.className
-                )}
+              <Link
+                href="/"
+                className={
+                  'flex items-center space-x-3 font-londrina text-3xl !font-semibold md:text-4xl lg:text-5xl'
+                }
               >
-                <Logo /> <span className="text-indigo-800">Shorto</span>
-              </div>
+                <img
+                  className="h-9 w-9 md:h-14 md:w-14"
+                  src={'/logo.png'}
+                  alt="Logo"
+                />
+                <span className="text-indigo-800">Shorto</span>
+              </Link>
               <a
                 aria-label="shorto github repository"
                 href="https://github.com/benrandja-akram/shorto"

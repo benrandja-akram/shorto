@@ -24,6 +24,7 @@ export default async function handler(req: NextRequest) {
     return new Response(
       JSON.stringify({
         url: `https://shorto.ink/${id}`,
+        id,
       }),
       {
         status: 200,

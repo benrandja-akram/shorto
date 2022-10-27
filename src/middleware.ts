@@ -11,21 +11,28 @@ const PUBLIC_FILE = /\.(.*)$/
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/favicon.ico') ||
+    pathname === '/index' ||
     pathname === '/' ||
     PUBLIC_FILE.test(pathname)
   ) {
     return
   }
+
   console.time('getUrl')
   const url = (await redis.get(pathname.slice(1))) as string
   console.timeEnd('getUrl')
 
   if (url) return NextResponse.redirect(url)
+
+  const notfoundUrl = request.nextUrl.clone()
+  notfoundUrl.pathname = '/not-found'
+  return NextResponse.rewrite(notfoundUrl)
 }
 
 export const config = {
