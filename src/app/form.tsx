@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useReducer, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { NextPage } from 'next'
 import { useMutation } from '@tanstack/react-query'
 import classnames from 'classnames'
@@ -9,16 +9,13 @@ import { string as zString } from 'zod'
 import toast, { Toaster } from 'react-hot-toast'
 import autoAnimate from '@formkit/auto-animate'
 import { MdLink } from 'react-icons/md'
-import { ShareDialog, Loading, ShortLinkCard } from '../components'
+import { useRouter } from 'next/navigation'
+import jsCookies from 'js-cookie'
 
-type ILink = {
-  link: string
-  shortened: string
-}
+import { ShareDialog, Loading } from '../components'
 
 const Form: NextPage = () => {
-  const [viewMore, enableViewMore] = useReducer(() => true, false)
-  const [links, setLinks] = useState([] as ILink[])
+  const router = useRouter()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {
     register,
@@ -44,24 +41,26 @@ const Form: NextPage = () => {
         }
 
         throw new Error('Undefined error')
-      }) as Promise<{ url: string }>
+      }) as Promise<{ url: string; id: string }>
     },
     {
       onSuccess(shortened, url) {
         setIsDialogOpen(true)
         resetForm()
-        const link: ILink = { link: url, shortened: shortened.url }
-        localStorage.setItem('links', JSON.stringify([link, ...links]))
-        setLinks([link, ...links])
 
+        jsCookies.set(
+          'links',
+          JSON.stringify([
+            ...JSON.parse(jsCookies.get('links') ?? '[]'),
+            shortened.id,
+          ])
+        )
+
+        router.refresh()
         toast.success('URL shortened successfully')
       },
     }
   )
-
-  useEffect(() => {
-    setLinks(JSON.parse(localStorage.getItem('links') ?? '[]') as ILink[])
-  }, [])
 
   return (
     <>
@@ -117,39 +116,6 @@ const Form: NextPage = () => {
           </div>
         )}
       </form>
-
-      {!!links.length && (
-        <div className="my-8 space-y-2">
-          <h2 className="text-xl font-semibold">Previous shortened URLs</h2>
-          <div
-            className=" divide-y overflow-hidden rounded-lg border text-gray-700 md:rounded-xl md:text-lg"
-            ref={(node) => {
-              node && autoAnimate(node)
-            }}
-          >
-            {links
-              .slice(0, viewMore ? undefined : 5)
-              .map(({ link, shortened }) => (
-                <ShortLinkCard
-                  key={shortened}
-                  active={shortened === data?.url}
-                  shortenedLink={shortened}
-                  originalLink={link}
-                />
-              ))}
-          </div>
-          {links.length > 5 && !viewMore && (
-            <div className=" ">
-              <button
-                className="py-2 font-semibold text-indigo-600 hover:underline"
-                onClick={enableViewMore}
-              >
-                View more
-              </button>
-            </div>
-          )}
-        </div>
-      )}
     </>
   )
 }

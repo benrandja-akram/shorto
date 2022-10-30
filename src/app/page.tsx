@@ -3,6 +3,7 @@ import { BsLink45Deg } from 'react-icons/bs'
 import { HiOutlineSparkles } from 'react-icons/hi'
 
 import Form from './form'
+import Links from './links'
 import QueryProvider from './query'
 
 export default function Home() {
@@ -20,8 +21,9 @@ export default function Home() {
         </div>
 
         <Form />
-
-        <div className="fadeIn mt-16">
+        {/* @ts-ignore */}
+        <Links />
+        <div className="mt-16">
           <h2 className="text-center text-2xl font-extrabold tracking-tight text-gray-900 md:text-4xl">
             Shorten & Share
           </h2>
