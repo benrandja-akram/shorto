@@ -3,11 +3,10 @@
 import { useReducer } from 'react'
 import type { NextPage } from 'next'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import classnames from 'classnames'
 import toast, { Toaster } from 'react-hot-toast'
 import { MdLink } from 'react-icons/md'
-import { useRouter } from 'next/navigation'
-import jsCookies from 'js-cookie'
 
 const ShareDialog = dynamic(() => import('./share-dialog'))
 
@@ -69,13 +68,6 @@ const Form: NextPage = () => {
 
             dispatch({ type: 'success', url: data.url })
             form.reset()
-            jsCookies.set(
-              'links',
-              JSON.stringify([
-                ...JSON.parse(jsCookies.get('links') ?? '[]'),
-                data.id,
-              ])
-            )
             router.refresh()
             toast.success('URL shortened successfully')
           } catch (error) {

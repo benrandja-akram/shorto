@@ -1,9 +1,7 @@
 import { Redis } from '@upstash/redis'
 import classNames from 'classnames'
-import Image from 'next/image'
 
 import { Copy } from './copy'
-import logo from '../../public/logo.png'
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL as string,

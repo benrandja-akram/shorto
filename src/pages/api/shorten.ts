@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { Redis } from '@upstash/redis'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
@@ -21,7 +21,7 @@ export default async function handler(req: NextRequest) {
     await redis.set(id, body.url)
     console.timeEnd('setURL')
 
-    return new Response(
+    const res = new NextResponse(
       JSON.stringify({
         url: `https://shorto.ink/${id}`,
         id,
@@ -33,6 +33,14 @@ export default async function handler(req: NextRequest) {
         },
       }
     )
+    res.cookies.set(
+      'links',
+      JSON.stringify([
+        ...JSON.parse(req.cookies.get('links')?.value ?? '[]'),
+        id,
+      ])
+    )
+    return res
   } catch (error) {
     console.error(error)
     return new Response('Bad request', { status: 400 })

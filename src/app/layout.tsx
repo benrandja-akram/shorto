@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import { Londrina_Outline, Inter } from '@next/font/google'
 import Link from 'next/link'
 
-import logo from '../../public/logo.png'
 import '../styles/globals.css'
 
 const inter = Inter({
@@ -26,15 +25,7 @@ function Layout({ children }: React.PropsWithChildren) {
       lang="en"
       className={classNames('font-inter', inter.variable, londrina.variable)}
     >
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg" href={logo.src} />
-        <title>URL Shortener</title>
-        <meta
-          name="description"
-          content="Free & Fast URL Shortener, Shortened URLs will never expire. We do not display ads during direct redirecting to the original url."
-        />
-      </head>
+      <head />
       <body>
         <div className="py-4 md:py-8">
           <div className="mx-auto max-w-5xl px-4">
