@@ -8,11 +8,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
 })
 
-export default async function handler(req: NextRequest) {
-  if (req.method !== 'POST') {
-    return new Response('Not found', { status: 404 })
-  }
-
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     z.string().url().parse(body.url)
@@ -47,6 +43,4 @@ export default async function handler(req: NextRequest) {
   }
 }
 
-export const config = {
-  runtime: 'experimental-edge',
-}
+export const runtime = 'edge'

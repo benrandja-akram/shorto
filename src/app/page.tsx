@@ -87,3 +87,13 @@ export default async function Home() {
     </div>
   )
 }
+
+export const metadata = {
+  title: 'URL Shortener', 
+  description: "Free & Fast URL Shortener, Shortened URLs will never expire. We do not display ads during direct redirecting to the original url.", 
+  icons: {
+    icon: "/logo.png",
+  },
+}      
+
+ 
