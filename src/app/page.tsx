@@ -88,12 +88,12 @@ export default async function Home() {
   )
 }
 
+export const runtime = 'edge'
 export const metadata = {
-  title: 'URL Shortener', 
-  description: "Free & Fast URL Shortener, Shortened URLs will never expire. We do not display ads during direct redirecting to the original url.", 
+  title: 'URL Shortener',
+  description:
+    'Free & Fast URL Shortener, Shortened URLs will never expire. We do not display ads during direct redirecting to the original url.',
   icons: {
-    icon: "/logo.png",
+    icon: '/logo.png',
   },
-}      
-
- 
+}
