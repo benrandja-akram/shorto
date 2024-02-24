@@ -1,6 +1,6 @@
 import { AiFillGithub } from 'react-icons/ai'
 import classNames from 'classnames'
-import { Londrina_Outline, Inter } from '@next/font/google'
+import { Londrina_Outline, Inter } from 'next/font/google'
 import Link from 'next/link'
 
 import '../styles/globals.css'

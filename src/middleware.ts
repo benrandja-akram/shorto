@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-import { NextResponse } from 'next/server'
+import { NextResponse, URLPattern } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const redis = new Redis({
@@ -7,20 +7,11 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
 })
 
-const PUBLIC_FILE = /\.(.*)$/
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  console.log(pathname)
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/static') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname === '/index' ||
-    pathname === '/' ||
-    PUBLIC_FILE.test(pathname)
-  ) {
+  console.log({ pathname })
+
+  if (pathname === '/' || pathname.includes('.')) {
     return
   }
 
@@ -28,7 +19,7 @@ export async function middleware(request: NextRequest) {
   const url = (await redis.get(pathname.slice(1))) as string
   console.timeEnd('getUrl')
 
-  if (url) return NextResponse.redirect(url)
+  if (url) return NextResponse.redirect(url, { status: 308 })
 
   const notfoundUrl = request.nextUrl.clone()
   notfoundUrl.pathname = '/not-found'
@@ -36,5 +27,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/:id?',
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
