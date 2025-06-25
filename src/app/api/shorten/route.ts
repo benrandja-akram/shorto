@@ -13,10 +13,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     z.string().url().parse(body.url)
     const id = nanoid(5)
-    console.time('setURL')
     await redis.set(id, body.url)
-    console.timeEnd('setURL')
-
+    console.log('new_link_created', id, body.url)
     const res = new NextResponse(
       JSON.stringify({
         url: `https://shorto.ink/${id}`,
